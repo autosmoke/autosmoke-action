@@ -1,0 +1,21 @@
+# Example: Run smoke tests on a schedule (every hour)
+name: Scheduled Smoke Tests
+
+on:
+  schedule:
+    # Run every hour
+    - cron: '0 * * * *'
+  # Also allow manual triggers
+  workflow_dispatch:
+
+jobs:
+  smoke-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run AutoSmoke Tests
+        uses: autosmoke/autosmoke-action@v1
+        with:
+          task-id: ${{ vars.AUTOSMOKE_TASK_ID }}
+          api-key: ${{ secrets.AUTOSMOKE_API_KEY }}
+          # Give more time for comprehensive tests
+          timeout: '600'

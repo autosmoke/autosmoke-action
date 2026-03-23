@@ -1,0 +1,43 @@
+name: 'AutoSmoke - AI-Powered Smoke Tests'
+description: 'Trigger AutoSmoke smoke tests on push, pull request, or schedule. AI-powered end-to-end testing for your web applications.'
+author: 'AutoSmoke'
+
+branding:
+  icon: 'check-circle'
+  color: 'green'
+
+inputs:
+  task-id:
+    description: 'The AutoSmoke task ID to run'
+    required: true
+  api-key:
+    description: 'Your AutoSmoke API key for authentication'
+    required: true
+  api-url:
+    description: 'AutoSmoke API base URL'
+    required: false
+    default: 'https://autosmoke.dev'
+  wait-for-result:
+    description: 'Wait for the smoke test to complete and report the result'
+    required: false
+    default: 'true'
+  timeout:
+    description: 'Maximum time to wait for test completion in seconds (only used when wait-for-result is true)'
+    required: false
+    default: '300'
+  fail-on-test-failure:
+    description: 'Fail the GitHub Action if the smoke test fails'
+    required: false
+    default: 'true'
+
+outputs:
+  run-id:
+    description: 'The ID of the triggered smoke test run'
+  status:
+    description: 'The final status of the smoke test (queued, running, succeeded, failed)'
+  run-url:
+    description: 'URL to view the smoke test run details'
+
+runs:
+  using: 'node20'
+  main: 'dist/index.js'

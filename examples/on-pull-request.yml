@@ -1,0 +1,18 @@
+# Example: Run smoke tests on pull requests
+name: PR Smoke Tests
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  smoke-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run AutoSmoke Tests
+        uses: autosmoke/autosmoke-action@v1
+        with:
+          task-id: ${{ vars.AUTOSMOKE_TASK_ID }}
+          api-key: ${{ secrets.AUTOSMOKE_API_KEY }}
+          # Fail the PR check if smoke tests fail
+          fail-on-test-failure: 'true'

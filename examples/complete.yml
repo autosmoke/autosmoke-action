@@ -1,0 +1,68 @@
+# Example: Complete workflow with multiple smoke tests
+name: AutoSmoke CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+  schedule:
+    # Daily at 6 AM UTC
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+
+jobs:
+  # Quick smoke test for PRs - don't block on failure during development
+  pr-smoke-test:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run Quick Smoke Test
+        id: smoke
+        uses: autosmoke/autosmoke-action@v1
+        with:
+          task-id: ${{ vars.AUTOSMOKE_QUICK_TASK_ID }}
+          api-key: ${{ secrets.AUTOSMOKE_API_KEY }}
+          timeout: '180'
+          fail-on-test-failure: 'false'
+
+      - name: Comment on PR
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const status = '${{ steps.smoke.outputs.status }}';
+            const runUrl = '${{ steps.smoke.outputs.run-url }}';
+            const emoji = status === 'succeeded' ? ':white_check_mark:' : ':x:';
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `${emoji} **Smoke Test ${status === 'succeeded' ? 'Passed' : 'Failed'}**\n\n[View Details](${runUrl})`
+            });
+
+  # Full smoke test suite for main branch
+  main-smoke-test:
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run Full Smoke Test Suite
+        uses: autosmoke/autosmoke-action@v1
+        with:
+          task-id: ${{ vars.AUTOSMOKE_FULL_TASK_ID }}
+          api-key: ${{ secrets.AUTOSMOKE_API_KEY }}
+          timeout: '600'
+          fail-on-test-failure: 'true'
+
+  # Scheduled comprehensive tests
+  scheduled-smoke-test:
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run Comprehensive Smoke Tests
+        uses: autosmoke/autosmoke-action@v1
+        with:
+          task-id: ${{ vars.AUTOSMOKE_COMPREHENSIVE_TASK_ID }}
+          api-key: ${{ secrets.AUTOSMOKE_API_KEY }}
+          timeout: '900'

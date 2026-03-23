@@ -1,0 +1,16 @@
+# Example: Run smoke tests on every push to main
+name: Smoke Tests
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  smoke-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run AutoSmoke Tests
+        uses: autosmoke/autosmoke-action@v1
+        with:
+          task-id: ${{ vars.AUTOSMOKE_TASK_ID }}
+          api-key: ${{ secrets.AUTOSMOKE_API_KEY }}
