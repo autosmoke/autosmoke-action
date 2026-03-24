@@ -29963,9 +29963,9 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(7484));
 const github = __importStar(__nccwpck_require__(3228));
-async function triggerTask(apiUrl, taskId, apiKey) {
-    const url = `${apiUrl}/api/tasks/${taskId}/run`;
-    core.info(`Triggering smoke test for task ${taskId}...`);
+async function triggerScenario(apiUrl, scenarioId, apiKey) {
+    const url = `${apiUrl}/api/scenarios/${scenarioId}/run`;
+    core.info(`Triggering smoke test for scenario ${scenarioId}...`);
     const response = await fetch(url, {
         method: "POST",
         headers: {
@@ -29975,7 +29975,7 @@ async function triggerTask(apiUrl, taskId, apiKey) {
     });
     const data = (await response.json());
     if (!response.ok) {
-        throw new Error(data.error || `HTTP ${response.status}: Failed to trigger task`);
+        throw new Error(data.error || `HTTP ${response.status}: Failed to trigger scenario`);
     }
     return data;
 }
@@ -30024,7 +30024,7 @@ function formatDuration(startedAt, finishedAt) {
 async function run() {
     try {
         // Get inputs
-        const taskId = core.getInput("task-id", { required: true });
+        const scenarioId = core.getInput("scenario-id", { required: true });
         const apiKey = core.getInput("api-key", { required: true });
         const apiUrl = core.getInput("api-url") || "https://autosmoke.dev";
         const waitForResult = core.getInput("wait-for-result") !== "false";
@@ -30038,8 +30038,8 @@ async function run() {
             core.info(`PR: #${context.payload.pull_request?.number}`);
         }
         core.info(`SHA: ${context.sha.substring(0, 7)}`);
-        // Trigger the task
-        const triggerResult = await triggerTask(apiUrl, taskId, apiKey);
+        // Trigger the scenario
+        const triggerResult = await triggerScenario(apiUrl, scenarioId, apiKey);
         const runId = triggerResult.run.id;
         core.info(`Smoke test triggered successfully!`);
         core.info(`Run ID: ${runId}`);

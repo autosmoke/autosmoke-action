@@ -21,7 +21,7 @@ jobs:
         id: smoke
         uses: autosmoke/autosmoke-action@v1
         with:
-          task-id: ${{ vars.AUTOSMOKE_QUICK_TASK_ID }}
+          scenario-id: ${{ vars.AUTOSMOKE_QUICK_SCENARIO_ID }}
           api-key: ${{ secrets.AUTOSMOKE_API_KEY }}
           timeout: '180'
           fail-on-test-failure: 'false'
@@ -50,7 +50,7 @@ jobs:
       - name: Run Full Smoke Test Suite
         uses: autosmoke/autosmoke-action@v1
         with:
-          task-id: ${{ vars.AUTOSMOKE_FULL_TASK_ID }}
+          scenario-id: ${{ vars.AUTOSMOKE_FULL_SCENARIO_ID }}
           api-key: ${{ secrets.AUTOSMOKE_API_KEY }}
           timeout: '600'
           fail-on-test-failure: 'true'
@@ -63,6 +63,6 @@ jobs:
       - name: Run Comprehensive Smoke Tests
         uses: autosmoke/autosmoke-action@v1
         with:
-          task-id: ${{ vars.AUTOSMOKE_COMPREHENSIVE_TASK_ID }}
+          scenario-id: ${{ vars.AUTOSMOKE_COMPREHENSIVE_SCENARIO_ID }}
           api-key: ${{ secrets.AUTOSMOKE_API_KEY }}
           timeout: '900'

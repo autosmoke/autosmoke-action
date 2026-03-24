@@ -12,5 +12,5 @@ jobs:
       - name: Run AutoSmoke Tests
         uses: autosmoke/autosmoke-action@v1
         with:
-          task-id: ${{ vars.AUTOSMOKE_TASK_ID }}
+          scenario-id: ${{ vars.AUTOSMOKE_SCENARIO_ID }}
           api-key: ${{ secrets.AUTOSMOKE_API_KEY }}

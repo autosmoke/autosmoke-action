@@ -4,7 +4,7 @@
  * Required env vars:
  *   API_URL  - e.g. https://autosmoke.dev or http://localhost:3000
  *   API_KEY  - a valid ask_* API key
- *   TASK_ID  - a task ID accessible by the key's project
+ *   SCENARIO_ID  - a scenario ID accessible by the key's project
  *
  * Run:  bun test
  */
@@ -13,23 +13,23 @@ import { describe, test, expect, beforeAll } from "bun:test";
 
 let API_URL: string;
 let API_KEY: string;
-let TASK_ID: string;
+let SCENARIO_ID: string;
 
 beforeAll(() => {
   API_URL = process.env.API_URL!;
   API_KEY = process.env.API_KEY!;
-  TASK_ID = process.env.TASK_ID!;
+  SCENARIO_ID = process.env.SCENARIO_ID!;
 
-  if (!API_URL || !API_KEY || !TASK_ID) {
-    throw new Error("Missing required env vars: API_URL, API_KEY, TASK_ID");
+  if (!API_URL || !API_KEY || !SCENARIO_ID) {
+    throw new Error("Missing required env vars: API_URL, API_KEY, SCENARIO_ID");
   }
 });
 
 let runId: string | undefined;
 
 describe("API authentication", () => {
-  test("POST /api/tasks/{id}/run with valid key returns 201 and run id", async () => {
-    const res = await fetch(`${API_URL}/api/tasks/${TASK_ID}/run`, {
+  test("POST /api/scenarios/{id}/run with valid key returns 201 and run id", async () => {
+    const res = await fetch(`${API_URL}/api/scenarios/${SCENARIO_ID}/run`, {
       method: "POST",
       headers: { Authorization: `Bearer ${API_KEY}` },
     });
@@ -49,16 +49,16 @@ describe("API authentication", () => {
     expect(body.run?.id).toBe(runId);
   });
 
-  test("POST /api/tasks/{id}/run with invalid key returns 401", async () => {
-    const res = await fetch(`${API_URL}/api/tasks/${TASK_ID}/run`, {
+  test("POST /api/scenarios/{id}/run with invalid key returns 401", async () => {
+    const res = await fetch(`${API_URL}/api/scenarios/${SCENARIO_ID}/run`, {
       method: "POST",
       headers: { Authorization: "Bearer ask_invalid0000000000000000000000" },
     });
     expect(res.status).toBe(401);
   });
 
-  test("POST /api/tasks/{id}/run with no auth returns 401", async () => {
-    const res = await fetch(`${API_URL}/api/tasks/${TASK_ID}/run`, {
+  test("POST /api/scenarios/{id}/run with no auth returns 401", async () => {
+    const res = await fetch(`${API_URL}/api/scenarios/${SCENARIO_ID}/run`, {
       method: "POST",
     });
     expect(res.status).toBe(401);

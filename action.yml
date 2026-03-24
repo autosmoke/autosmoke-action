@@ -7,8 +7,8 @@ branding:
   color: 'green'
 
 inputs:
-  task-id:
-    description: 'The AutoSmoke task ID to run'
+  scenario-id:
+    description: 'The AutoSmoke test scenario ID to run'
     required: true
   api-key:
     description: 'Your AutoSmoke API key for authentication'

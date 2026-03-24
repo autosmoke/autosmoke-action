@@ -8,7 +8,7 @@ Run AI-powered smoke tests on your web applications directly from GitHub Actions
 - name: Run Smoke Tests
   uses: autosmoke/autosmoke-action@v1
   with:
-    task-id: ${{ vars.AUTOSMOKE_TASK_ID }}
+    scenario-id: ${{ vars.AUTOSMOKE_SCENARIO_ID }}
     api-key: ${{ secrets.AUTOSMOKE_API_KEY }}
 ```
 
@@ -16,7 +16,7 @@ Run AI-powered smoke tests on your web applications directly from GitHub Actions
 
 | Input | Description | Required | Default |
 |-------|-------------|----------|---------|
-| `task-id` | The AutoSmoke task ID to run | Yes | - |
+| `scenario-id` | The AutoSmoke test scenario ID to run | Yes | - |
 | `api-key` | Your AutoSmoke API key | Yes | - |
 | `api-url` | AutoSmoke API base URL | No | `https://autosmoke.dev` |
 | `wait-for-result` | Wait for test completion | No | `true` |
@@ -49,7 +49,7 @@ jobs:
       - name: Run AutoSmoke Tests
         uses: autosmoke/autosmoke-action@v1
         with:
-          task-id: ${{ vars.AUTOSMOKE_TASK_ID }}
+          scenario-id: ${{ vars.AUTOSMOKE_SCENARIO_ID }}
           api-key: ${{ secrets.AUTOSMOKE_API_KEY }}
 ```
 
@@ -69,7 +69,7 @@ jobs:
       - name: Run AutoSmoke Tests
         uses: autosmoke/autosmoke-action@v1
         with:
-          task-id: ${{ vars.AUTOSMOKE_TASK_ID }}
+          scenario-id: ${{ vars.AUTOSMOKE_SCENARIO_ID }}
           api-key: ${{ secrets.AUTOSMOKE_API_KEY }}
 ```
 
@@ -89,7 +89,7 @@ jobs:
       - name: Run AutoSmoke Tests
         uses: autosmoke/autosmoke-action@v1
         with:
-          task-id: ${{ vars.AUTOSMOKE_TASK_ID }}
+          scenario-id: ${{ vars.AUTOSMOKE_SCENARIO_ID }}
           api-key: ${{ secrets.AUTOSMOKE_API_KEY }}
           timeout: '600'
 ```
@@ -100,7 +100,7 @@ jobs:
 - name: Trigger Smoke Tests
   uses: autosmoke/autosmoke-action@v1
   with:
-    task-id: ${{ vars.AUTOSMOKE_TASK_ID }}
+    scenario-id: ${{ vars.AUTOSMOKE_SCENARIO_ID }}
     api-key: ${{ secrets.AUTOSMOKE_API_KEY }}
     wait-for-result: 'false'
 ```
@@ -111,7 +111,7 @@ jobs:
 - name: Run Smoke Tests
   uses: autosmoke/autosmoke-action@v1
   with:
-    task-id: ${{ vars.AUTOSMOKE_TASK_ID }}
+    scenario-id: ${{ vars.AUTOSMOKE_SCENARIO_ID }}
     api-key: ${{ secrets.AUTOSMOKE_API_KEY }}
     fail-on-test-failure: 'false'
 ```
@@ -120,14 +120,14 @@ jobs:
 
 1. **Create an AutoSmoke account** at [autosmoke.dev](https://autosmoke.dev)
 
-2. **Create a smoke test task** in the AutoSmoke dashboard and copy the task ID
+2. **Create a test scenario** in the AutoSmoke dashboard and copy the scenario ID
 
 3. **Generate an API key** from your account settings
 
 4. **Add secrets to your repository:**
    - Go to Settings > Secrets and variables > Actions
    - Add `AUTOSMOKE_API_KEY` as a secret
-   - Add `AUTOSMOKE_TASK_ID` as a variable (or secret if you prefer)
+   - Add `AUTOSMOKE_SCENARIO_ID` as a variable (or secret if you prefer)
 
 5. **Add the workflow** to your repository in `.github/workflows/`
 

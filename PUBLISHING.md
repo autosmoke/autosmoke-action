@@ -52,7 +52,7 @@ git push -u origin main
    ```yaml
    - uses: autosmoke/autosmoke-action@v1
      with:
-       task-id: ${{ vars.AUTOSMOKE_TASK_ID }}
+       scenario-id: ${{ vars.AUTOSMOKE_SCENARIO_ID }}
        api-key: ${{ secrets.AUTOSMOKE_API_KEY }}
    ```
    ```
@@ -120,10 +120,10 @@ git push origin v1 --force
 
 ### API Authentication Required
 
-The current API endpoint (`/api/tasks/[id]/run`) does not validate the `Authorization` header. Before production use, add API key authentication:
+The current API endpoint (`/api/scenarios/[id]/run`) does not validate the `Authorization` header. Before production use, add API key authentication:
 
 ```typescript
-// In frontend/app/api/tasks/[id]/run/route.ts
+// In frontend/app/api/scenarios/[id]/run/route.ts
 const authHeader = request.headers.get("Authorization");
 if (!authHeader?.startsWith("Bearer ")) {
   return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

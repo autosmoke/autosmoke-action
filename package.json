@@ -7,7 +7,10 @@
     "build": "ncc build src/index.ts -o dist --source-map --license licenses.txt",
     "lint": "eslint src/",
     "typecheck": "tsc --noEmit",
-    "test": "bun test"
+    "test": "bun test",
+    "release": "bash scripts/release.sh",
+    "release:minor": "bash scripts/release.sh minor",
+    "release:major": "bash scripts/release.sh major"
   },
   "keywords": [
     "github-action",

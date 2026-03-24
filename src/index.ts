@@ -5,7 +5,7 @@ interface TriggerResponse {
   run: {
     id: string;
     status: string;
-    task_id: string;
+    scenario_id: string;
     flow_name: string;
   };
   error?: string;
@@ -15,7 +15,7 @@ interface RunResponse {
   run: {
     id: string;
     status: string;
-    task_id: string;
+    scenario_id: string;
     flow_name: string;
     started_at: string | null;
     finished_at: string | null;
@@ -27,14 +27,14 @@ interface RunResponse {
   error?: string;
 }
 
-async function triggerTask(
+async function triggerScenario(
   apiUrl: string,
-  taskId: string,
+  scenarioId: string,
   apiKey: string
 ): Promise<TriggerResponse> {
-  const url = `${apiUrl}/api/tasks/${taskId}/run`;
+  const url = `${apiUrl}/api/scenarios/${scenarioId}/run`;
 
-  core.info(`Triggering smoke test for task ${taskId}...`);
+  core.info(`Triggering smoke test for scenario ${scenarioId}...`);
 
   const response = await fetch(url, {
     method: "POST",
@@ -47,7 +47,7 @@ async function triggerTask(
   const data = (await response.json()) as TriggerResponse;
 
   if (!response.ok) {
-    throw new Error(data.error || `HTTP ${response.status}: Failed to trigger task`);
+    throw new Error(data.error || `HTTP ${response.status}: Failed to trigger scenario`);
   }
 
   return data;
@@ -120,7 +120,7 @@ function formatDuration(startedAt: string, finishedAt: string): string {
 async function run(): Promise<void> {
   try {
     // Get inputs
-    const taskId = core.getInput("task-id", { required: true });
+    const scenarioId = core.getInput("scenario-id", { required: true });
     const apiKey = core.getInput("api-key", { required: true });
     const apiUrl = core.getInput("api-url") || "https://autosmoke.dev";
     const waitForResult = core.getInput("wait-for-result") !== "false";
@@ -136,8 +136,8 @@ async function run(): Promise<void> {
     }
     core.info(`SHA: ${context.sha.substring(0, 7)}`);
 
-    // Trigger the task
-    const triggerResult = await triggerTask(apiUrl, taskId, apiKey);
+    // Trigger the scenario
+    const triggerResult = await triggerScenario(apiUrl, scenarioId, apiKey);
     const runId = triggerResult.run.id;
 
     core.info(`Smoke test triggered successfully!`);
