@@ -8,8 +8,17 @@ branding:
 
 inputs:
   scenario-id:
-    description: 'The AutoSmoke test scenario ID to run'
-    required: true
+    description: 'The AutoSmoke test scenario ID to run (mutually exclusive with steps)'
+    required: false
+  steps:
+    description: 'Inline test steps, one per line (mutually exclusive with scenario-id)'
+    required: false
+  name:
+    description: 'Test name (used with inline steps, defaults to workflow name)'
+    required: false
+  vars:
+    description: 'Variables for inline steps as KEY=VALUE per line or a JSON object'
+    required: false
   api-key:
     description: 'Your AutoSmoke API key for authentication'
     required: true

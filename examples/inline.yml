@@ -1,0 +1,53 @@
+# Example: Define test steps directly in the workflow YAML
+name: Smoke Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  smoke-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run Login Flow Test
+        uses: autosmoke/autosmoke-action@v1
+        with:
+          api-key: ${{ secrets.AUTOSMOKE_API_KEY }}
+          name: Login Flow
+          steps: |
+            Navigate to https://myapp.com
+            Click the "Sign In" button
+            Enter "user@example.com" in the email field
+            Enter "password123" in the password field
+            Click the "Log In" button
+            Verify the page contains "Welcome"
+
+      - name: Run Checkout Flow Test
+        uses: autosmoke/autosmoke-action@v1
+        with:
+          api-key: ${{ secrets.AUTOSMOKE_API_KEY }}
+          name: Checkout Flow
+          steps: |
+            Navigate to https://myapp.com/products
+            Click the first product card
+            Click the "Add to Cart" button
+            Navigate to https://myapp.com/cart
+            Verify the cart contains 1 item
+          vars: |
+            PROMO_CODE=SAVE10
+
+      # You can also use JSON for variables
+      - name: Run Search Test
+        uses: autosmoke/autosmoke-action@v1
+        with:
+          api-key: ${{ secrets.AUTOSMOKE_API_KEY }}
+          name: Search
+          steps: |
+            Navigate to https://myapp.com
+            Click the search icon
+            Type "running shoes" in the search field
+            Press Enter
+            Verify the page contains "results"
+          vars: '{"LOCALE": "en-US"}'

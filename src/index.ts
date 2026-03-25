@@ -27,6 +27,20 @@ interface RunResponse {
   error?: string;
 }
 
+function parseVars(input: string): Record<string, string> {
+  const trimmed = input.trim();
+  if (!trimmed) return {};
+  if (trimmed.startsWith("{")) return JSON.parse(trimmed);
+  const vars: Record<string, string> = {};
+  for (const line of trimmed.split("\n")) {
+    const l = line.trim();
+    if (!l || l.startsWith("#")) continue;
+    const eq = l.indexOf("=");
+    if (eq > 0) vars[l.slice(0, eq).trim()] = l.slice(eq + 1).trim();
+  }
+  return vars;
+}
+
 async function triggerScenario(
   apiUrl: string,
   scenarioId: string,
@@ -48,6 +62,38 @@ async function triggerScenario(
 
   if (!response.ok) {
     throw new Error(data.error || `HTTP ${response.status}: Failed to trigger scenario`);
+  }
+
+  return data;
+}
+
+async function triggerInlineRun(
+  apiUrl: string,
+  apiKey: string,
+  steps: string,
+  name: string,
+  vars?: Record<string, string>
+): Promise<TriggerResponse> {
+  const url = `${apiUrl}/api/runs/inline`;
+
+  core.info(`Triggering inline smoke test "${name}"...`);
+
+  const body: Record<string, unknown> = { name, steps };
+  if (vars && Object.keys(vars).length > 0) body.vars = vars;
+
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify(body),
+  });
+
+  const data = (await response.json()) as TriggerResponse;
+
+  if (!response.ok) {
+    throw new Error(data.error || `HTTP ${response.status}: Failed to trigger inline run`);
   }
 
   return data;
@@ -120,12 +166,23 @@ function formatDuration(startedAt: string, finishedAt: string): string {
 async function run(): Promise<void> {
   try {
     // Get inputs
-    const scenarioId = core.getInput("scenario-id", { required: true });
+    const scenarioId = core.getInput("scenario-id");
+    const steps = core.getInput("steps");
+    const name = core.getInput("name");
+    const varsInput = core.getInput("vars");
     const apiKey = core.getInput("api-key", { required: true });
     const apiUrl = core.getInput("api-url") || "https://autosmoke.dev";
     const waitForResult = core.getInput("wait-for-result") !== "false";
     const timeout = parseInt(core.getInput("timeout") || "300", 10);
     const failOnTestFailure = core.getInput("fail-on-test-failure") !== "false";
+
+    // Validate: exactly one of scenario-id or steps must be provided
+    if (scenarioId && steps) {
+      throw new Error("Cannot use both 'scenario-id' and 'steps'. Provide one or the other.");
+    }
+    if (!scenarioId && !steps) {
+      throw new Error("Either 'scenario-id' or 'steps' must be provided.");
+    }
 
     // Log context
     const context = github.context;
@@ -136,8 +193,17 @@ async function run(): Promise<void> {
     }
     core.info(`SHA: ${context.sha.substring(0, 7)}`);
 
-    // Trigger the scenario
-    const triggerResult = await triggerScenario(apiUrl, scenarioId, apiKey);
+    // Trigger the run
+    let triggerResult: TriggerResponse;
+
+    if (scenarioId) {
+      triggerResult = await triggerScenario(apiUrl, scenarioId, apiKey);
+    } else {
+      const testName = name || context.workflow || "Inline Test";
+      const vars = varsInput ? parseVars(varsInput) : undefined;
+      triggerResult = await triggerInlineRun(apiUrl, apiKey, steps, testName, vars);
+    }
+
     const runId = triggerResult.run.id;
 
     core.info(`Smoke test triggered successfully!`);
