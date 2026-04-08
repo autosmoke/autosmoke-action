@@ -48,5 +48,5 @@ outputs:
     description: 'URL to view the smoke test run details'
 
 runs:
-  using: 'node20'
+  using: 'node24'
   main: 'dist/index.js'
